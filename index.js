@@ -1,28 +1,20 @@
-import { fileURLToPath } from 'url';
-import * as path from 'path';
-import express from 'express';
-import { createServer } from 'http';
 import { Server } from 'socket.io';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const server = createServer(app);
-const io = new Server(server);
-
-app.get('/', (req, res) => {
-  const filePath = path.join(__dirname, 'index.html');
-  res.sendFile(filePath);
+const io = new Server(3000, {
+  cors:{
+    origins: ["*"],
+    handlePreFlightRequest: (req, res)=>{
+      res.writeHead(200, {
+        "Access-Control-Allow-Origin": "*"
+      })
+      res.end()
+    }
+  }
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-    console.log('user disconnected');
-    });
-});
+io.on("connection", (socket)=>{
+  console.log("new connection")
+  socket.emit("chat-message", "Hello world")
+})
 
-server.listen(3000, () => {
-  console.log('server running at http://localhost:3000');
-});
+console.log('socket running at http://localhost:3000');
