@@ -15,8 +15,10 @@ const io = new Server(3000, {
 io.on("connection", (socket)=>{
   console.log("new connection")
   socket.on('send-chat-message', message=>{
-    console.log(message)
     socket.broadcast.emit('chat-message', message)
+  })
+  socket.on('user-joined', (user)=>{
+    socket.broadcast.emit('new-user-joined', user)
   })
 })
 
